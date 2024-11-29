@@ -1,30 +1,26 @@
-terraform {
-  required_version = ">= 1.5.0"  # Ensure you're using at least Terraform version 1.5.0
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"  # Latest AWS provider version
-    }
-  }
-}
-
-# AWS provider configuration for the London region (eu-west-2)
 provider "aws" {
-  region = var.aws_region  # Region defined in variables.tf
+  region = "eu-west-2"
 }
 
-# Create the VPC resource
-resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/16"  # Define CIDR block
-  enable_dns_support   = true            # Enable DNS support
-  enable_dns_hostnames = true            # Enable DNS hostnames
-  tags = {
-    Name = "London-VPC"                  # Tag the VPC for identification
-  }
+# Call the VPC Module
+module "vpc" {
+  source = "./vpc"  # Path to the VPC module
+
+  name              = "london-vpc"
+  cidr              = "10.0.0.0/16"
+  azs               = ["eu-west-2a", "eu-west-2b"]
+  private_subnets   = ["10.0.1.0/24", "10.0.2.0/24"]
+  public_subnets    = ["10.0.3.0/24", "10.0.4.0/24"]
 }
 
-# Output the VPC ID for reference
 output "vpc_id" {
-  value = aws_vpc.main.id
+  value = module.vpc.vpc_id
+}
+
+output "public_subnets" {
+  value = module.vpc.public_subnets
+}
+
+output "private_subnets" {
+  value = module.vpc.private_subnets
 }
