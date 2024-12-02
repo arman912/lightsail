@@ -4,7 +4,7 @@
 variable "aws_region" {
   description = "The AWS region to deploy resources in"
   type        = string
-  default     = "eu-west-2"  # Default to London region
+  default     = "eu-west-2" # Default to London region
 }
 
 # Project name
@@ -39,7 +39,25 @@ variable "public_subnets" {
   type        = list(string)
 }
 
-/* #/ Lightsail Blueprint (e.g., WordPress blueprint)
+# Declare the variable for Lightsail bundle size
+variable "bundle_id" {
+  description = "The Lightsail bundle size"
+  type        = string
+}
+
+# Declare the variable for the domain name
+variable "domain_name" {
+  description = "The domain name for DNS setup (e.g., example.com)"
+  type        = string
+}
+# Declare the variable for the subdomain
+variable "subdomain" {
+  description = "The subdomain to create (e.g., www)"
+  type        = string
+  default     = "www" # You can specify a default value or leave it empty if it's required
+}
+
+# Lightsail Blueprint (WordPress)
 variable "lightsail_blueprints" {
   description = "A map of Lightsail blueprint IDs"
   type        = map(string)
@@ -47,35 +65,8 @@ variable "lightsail_blueprints" {
     wordpress = "wordpress"
   }
 }
- */
-/* # Lightsail Bundle ID (size of Lightsail instance)
-variable "bundle_id" {
-  description = "The bundle ID for the Lightsail instance"
-  type        = string
-  default     = "micro_2_0"  # Default Lightsail instance size
-}
 
-# Route 53 Domain Name
-variable "domain_name" {
-  description = "The domain name for DNS setup (e.g., example.com)"
-  type        = string
-}
 
-# Route 53 Subdomain (e.g., 'www')
-variable "subdomain" {
-  description = "The subdomain to create (e.g., www)"
-  type        = string
-  default     = "www"
-}
 
-# Static IP Address for Lightsail
-variable "lightsail_ip" {
-  description = "The static IP address of the Lightsail instance"
-  type        = string
-}
 
-# TTL for DNS Records
-variable "ttl" {
-  description = 300  # Default TTL of 5 minutes
-}
- */
+
