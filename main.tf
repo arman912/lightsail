@@ -1,30 +1,34 @@
-terraform {
-  required_version = ">= 1.5.0"  # Ensure you're using at least Terraform version 1.5.0
 
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"  # Latest AWS provider version
-    }
-  }
-}
-
-# AWS provider configuration for the London region (eu-west-2)
 provider "aws" {
-  region = var.aws_region  # Region defined in variables.tf
+  region = "eu-west-2"
 }
 
-# Create the VPC resource
-resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/16"  # Define CIDR block
-  enable_dns_support   = true            # Enable DNS support
-  enable_dns_hostnames = true            # Enable DNS hostnames
-  tags = {
-    Name = "London-VPC"                  # Tag the VPC for identification
-  }
+# Call the VPC Module
+# module "vpc" {
+#   source = "./vpc" # Path to the VPC module
+
+#   name            = "london-vpc"
+#   cidr            = "10.0.0.0/16"
+#   azs             = ["eu-west-2a", "eu-west-2b"]
+#   private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+#   public_subnets  = ["10.0.3.0/24", "10.0.4.0/24"]
+# }
+
+module "lightsail" {
+  source               = "./lightsail"
+  project_name         = var.project_name
+  bundle_id            = var.bundle_id
+  lightsail_blueprints = var.lightsail_blueprints
+  domain_name          = var.domain_name
+  subdomain            = var.subdomain
+  route53_zone_id      = module.route53.zone_id # Pass the zone ID from Route53 module
+  
 }
 
-# Output the VPC ID for reference
-output "vpc_id" {
-  value = aws_vpc.main.id
+module "route53" {
+  source       = "./route53"
+  domain_name  = var.domain_name
+  subdomain    = var.subdomain
+  lightsail_ip = module.lightsail.lightsail_static_ip
+  
 }
